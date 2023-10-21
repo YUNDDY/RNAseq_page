@@ -75,7 +75,7 @@ def generate_summary_table(zip_file_path):
 
 
 def index(request):
-    uploaded_file = '00000000_Company_Client.ZIP'
+    uploaded_file = '00000000_Company_Client.zip'
     #request.session['uploaded_file'] = uploaded_file.read()
     extracted_folder = handle_uploaded_zip(os.path.join(settings.MEDIA_ROOT, uploaded_file))
     serviceID=os.path.splitext(uploaded_file)[0]
