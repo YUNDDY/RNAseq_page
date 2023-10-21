@@ -1,0 +1,586 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block breadcrumbs %}{% endblock breadcrumbs %}
+
+{% block extrastyle %}
+
+<style>
+
+.iframe-container {display: flex; width: 100%; height: 100%; flex-direction: column; overflow: hidden;}
+.parent-fit { flex-grow: 1; border: none; margin: 0; padding: 0; height: 100vh; }
+
+</style>
+
+{% endblock extrastyle %}
+
+{% block content %}
+
+       {% if request.session.uploaded_file_path %}
+        1
+        {{ data_test }}
+        {% else %}
+        2
+        {% endif %}
+        
+<!-- <div class="row">
+  <div class="col-md-12"> 
+    <div class="iframe-container">
+      <iframe class="parent-fit" src="/datatb/product/"></iframe>    
+    </div>
+  </div>
+</div> -->
+
+
+
+<div class="col-xl-12 col-md-12 m-b-30">
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active show" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+        aria-selected="false">Heatmap plots</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+        aria-controls="profile" aria-selected="true">PCA plot</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab"
+        aria-controls="contact" aria-selected="false">Venn diagram</a>
+    </li>
+  </ul>
+  
+  <div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade active show" id="home" role="tabpanel" aria-labelledby="home-tab">
+      
+      <div class="container mt-5">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {% if data_files %}
+          <h4>Heatmap</h4>
+            <h5>Gene list</h5>
+            {% for data_file in data_files %}
+              <input type="radio" name="selected_data_files" value="{{ data_file }}" {% if forloop.first %}checked{% endif %}><h6 style="display: inline;"> {{ data_file|cut:'media\\Result\\' }}</h6><br>
+            {% endfor %}
+            <br>
+            <h5> Clustering Check</h5>
+            <div class="form-group form-check">
+              <input type="checkbox" class="form-check-input" id="cluster_r" name="cluster_r">
+              <label class="form-check-label" for="cluster_r"><h6>Cluster rows(gene)</h6></label>
+              <br>
+              <input type="checkbox" class="form-check-input" id="cluster_c" name="cluster_c">
+              <label class="form-check-label" for="cluster_c"><h6>Cluster columns(sample)</h6></label>
+              <br>
+              <input type="checkbox" class="form-check-input" id="gene_view" name="gene_view">
+              <label class="form-check-label" for="gene_view"><h6>hide gene name</h6></label>
+            </div>
+            <h5> Heatmap Color Select</h5>
+            <div class="form-group form-check">
+              <!--https://matplotlib.org/stable/gallery/color/colormap_reference.html-->
+              <label for="color">Color:</label>
+              <select id="color" name="color">
+              <option value="RdBu_r">Blue-Red</option>
+              <option value="PRGn">Purple-Green</option>
+              <option value="PuOr">Purple-Orange</option>
+              <option value="RdYlBu_r">Blue-Yellow-Red</option>
+              <option value="bwr">Blue-Red</option>
+              <option value="coolwarm">coolwarm</option>
+              </select>
+              <br>
+            </div>
+            <input type="submit" value="Start">
+            
+          {% else %}
+            <h5>How to draw Heatmap</h5><br>
+            <h6>1. Upload your File</h6><br>
+            Example file format: <br>
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                <th>gene name</th>
+                <th>Sample 1</th>
+                <th>Sample 2</th>
+                <th>Sample 3</th>
+                <th>...</th>
+                <th class="text-right"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- 1탭 첫번째 행 -->
+                <tr>
+                  <td>
+                    <h6 class="m-0">gene A</h6>
+                  </td>
+                  <td>
+                    <h6 class="m-0">1.36</h6>
+                  </td>
+                  <td>
+                    <h6 class="m-0">2.57</h6>
+                  </td>
+                  <td>
+                    <h6 class="m-0">2.59</h6>
+                  </td>
+                  <td>
+                    <h6 class="m-0">...</h6>
+                  </td>
+                </tr>
+                <!-- 1탭 두번째 행 -->
+                <tr>
+                  <td>
+                    <h6 class="m-0">gene B</h6>
+                  </td>
+                  <td>
+                    <h6 class="m-0">6.15</h6>
+                  </td>
+                  <td>
+                    <h6 class="m-0">4.24</h6>
+                  </td>
+                  <td>
+                    <h6 class="m-0">10.28</h6>
+                  </td>
+                  <td>
+                    <h6 class="m-0">...</h6>
+                  </td>
+                </tr>
+                <!-- 1탭 세 번째 행 -->
+                <tr>
+                  <td>
+                    <h6 class="m-0">gene C</h6>
+                  </td>
+                  <td>
+                    <h6 class="m-0">10.5</h6>
+                  </td>
+                  <td>
+                    <h6 class="m-0">17.2</h6>
+                  </td>
+                  <td>
+                    <h6 class="m-0">24.4</h6>
+                  </td>
+                  <td>
+                    <h6 class="m-0">...</h6>
+                  </td>
+                </tr>
+                <!-- 1탭 네 번째 행 -->
+                <tr>
+                  <td>
+                    <h6 class="m-0">gene D</h6>
+                  </td>
+                  <td>
+                    <h6 class="m-0">1.8</h6>
+                  </td>
+                  <td>
+                    <h6 class="m-0">1.57</h6>
+                  </td>
+                  <td>
+                    <h6 class="m-0">0.24</h6>
+                  </td>
+                  <td>
+                    <h6 class="m-0">...</h6>
+                  </td>
+                </tr>
+                <!-- 1탭 다섯 번째 행 -->
+                <tr>
+                  <td>
+                    <h6 class="m-0">...</h6>
+                  </td>
+                  <td>
+                    <h6 class="m-0">...</h6>
+                  </td>
+                  <td>
+                    <h6 class="m-0">...</h6>
+                  </td>
+                  <td>
+                    <h6 class="m-0">...</h6>
+                  </td>
+                  <td>
+                    <h6 class="m-0">...</h6>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          <h6>2. If you want to clustering sample and genes, please check the "Cluster rows and columns"</h6><br>
+          <h6>3. click the "Upload"</h6><br>
+          <!--- 여기부터 시작이다-->
+          <div class="container mt-5">
+            <h3>Upload a file</h3>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="genefile">Select a gene list:</label>
+                    <input type="file" class="form-control-file" id="genefile" name="genefile">
+                </div>
+                <div class="form-group">
+                  <label for="expressionfile">Select a expression value file:</label>
+                  <input type="file" class="form-control-file" id="expressionfile" name="expressionfile">
+                  <h6>if you want to make graph using analysis Result, please press "Custom Graph" on your left side</h6>
+              </div>
+              <br>
+              <h3>Setting</h3>
+                <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="cluster_r" name="cluster_r">
+                    <label class="form-check-label" for="cluster_r">Cluster rows(gene)</label>
+                    <br>
+                    <input type="checkbox" class="form-check-input" id="cluster_c" name="cluster_c">
+                    <label class="form-check-label" for="cluster_c">Cluster columns(sample)</label>
+                    <br>
+                    <input type="checkbox" class="form-check-input" id="gene_view" name="gene_view">
+                  <label class="form-check-label" for="gene_view">hide gene name</label>
+                </div>
+        
+                <div class="form-group form-check">
+                <!--https://matplotlib.org/stable/gallery/color/colormap_reference.html-->
+                  <label for="color">Color:</label>
+                    <select id="color" name="color">
+                    <option value="RdBu_r">Blue-Red</option>
+                    <option value="PRGn">Purple-Green</option>
+                    <option value="PuOr">Purple-Orange</option>
+                    <option value="RdYlBu_r">Blue-Yellow-Red</option>
+                    <option value="bwr">Blue-Red</option>
+                    <option value="coolwarm">coolwarm</option>
+                  </select>
+          <br>
+                </div>
+                <button type="submit" class="btn btn-primary" id="upload-btn">Upload</button>
+            </form>
+            
+            <div class="mt-5" id="result-div">
+              {% if uploaded_file_url1 %}
+              <p>File uploaded at: <a href="{{ uploaded_file_url1 }}">{{ uploaded_file_url }}</a></p>
+              <p>File uploaded at: <a href="{{ uploaded_file_url2 }}">{{ uploaded_file_url }}</a></p>
+              <br>
+              <h3>Uploaded Data</h3>
+              <pre>{{ file_content }}</pre>
+        <br>
+                {{ heatmap_html|safe }}
+              <br>
+              <br>
+                {% if heatmap_download_link %}
+                  <a href="{{ heatmap_download_link }}" download="heatmap.png" style="font-size: 16px;">Download Heatmap PNG</a>
+                {% endif %}
+        
+              {% endif %}
+            </div>
+        </div>
+          <!-- 여기까지 추가함-->
+          {% endif %}
+        </form>
+          
+        <div class="mt-5" id="result-div">
+          <br>        
+          {% if heatmap_html %}
+          <h4>Heatmap for {{ selected_data_file|cut:'media\\Result\\'|cut:'.txt' }}:</h4>
+            {{ heatmap_html|safe }}
+            {% if heatmap_download_link %}
+             <a href="{{ heatmap_download_link }}" download="heatmap.png" style="font-size: 16px;">Download Heatmap PNG</a>
+            {% endif %}
+          {% endif %}
+          <br>
+          <br>
+        </div>
+        <br><br>
+      </div>
+    </div>
+    
+    <script>
+    document.getElementById('start-button').addEventListener('click', function() {
+        document.querySelector('form').submit();
+    });
+</script>
+
+
+    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+      <div class="container mt-5">
+        <div class="mt-5" id="result-div">
+          {% if sample_list %}
+            {% if pca_html %}
+              {{ pca_html|safe }}
+              {% if pca_download_link %}
+                <a href="{{ pca_download_link }}" download="PCA.png" style="font-size: 16px;">Download PCA PNG</a>
+              {% endif %}
+            {% endif %}
+            <form method="post" action="{% url 'process_group' %}">
+            {% csrf_token %}
+            <br><br>
+              <table class="table table-hover">
+                <h5>Sample List and Grouping:</h5>
+                <h6>If you want to grouping the samples, please write the Group Name for each sample</h6>
+                <br>
+                <thead>
+                  <tr>
+                    <th>Sample ID</th>
+                    <th>Group</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for sample in sample_list %}
+                  <tr>
+                    <td>{{ sample.sample_id }}</td>
+                    <td>
+                      <input type="text" class="form-control" name="group_{{ sample.sample_id }}" placeholder="Enter Group. ex) A">
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <form method="post" action="{% url 'process_group_pca' %}">
+                <button type="submit">Submit</button>
+              </form>
+              
+            </form>
+        {% else %}
+        <h5>How to draw PCA plot</h5><br>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>gene name</th>
+              <th>Sample 1</th>
+              <th>Sample 2</th>
+              <th>Sample 3</th>
+              <th>...</th>
+              <th class="text-right"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <h6 class="m-0">gene A</h6>
+              </td>
+              <td>
+                <h6 class="m-0">1.36</h6>
+              </td>
+              <td>
+                <h6 class="m-0">2.57</h6>
+              </td>
+              <td>
+                <h6 class="m-0">2.59</h6>
+              </td>
+              <td>
+                <h6 class="m-0">...</h6>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h6 class="m-0">gene B</h6>
+              </td>
+              <td>
+                <h6 class="m-0">6.15</h6>
+              </td>
+              <td>
+                <h6 class="m-0">4.24</h6>
+              </td>
+              <td>
+                <h6 class="m-0">10.28</h6>
+              </td>
+              <td>
+                <h6 class="m-0">...</h6>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h6 class="m-0">gene C</h6>
+              </td>
+              <td>
+                <h6 class="m-0">10.5</h6>
+              </td>
+              <td>
+                <h6 class="m-0">17.2</h6>
+              </td>
+              <td>
+                <h6 class="m-0">24.4</h6>
+              </td>
+              <td>
+                <h6 class="m-0">...</h6>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h6 class="m-0">gene D</h6>
+              </td>
+              <td>
+                <h6 class="m-0">1.8</h6>
+              </td>
+              <td>
+                <h6 class="m-0">1.57</h6>
+              </td>
+              <td>
+                <h6 class="m-0">0.24</h6>
+              </td>
+              <td>
+                <h6 class="m-0">...</h6>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h6 class="m-0">...</h6>
+              </td>
+              <td>
+                <h6 class="m-0">...</h6>
+              </td>
+              <td>
+                <h6 class="m-0">...</h6>
+              </td>
+              <td>
+                <h6 class="m-0">...</h6>
+              </td>
+              <td>
+                <h6 class="m-0">...</h6>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        {% endif %}
+          </div>
+        </div>
+        <br>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        var form = document.getElementById('myForm');
+        
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+
+          var pcaTabLink = document.querySelector('a[data-toggle="tab"][href="#profile"]');
+          if (pcaTabLink) {
+            pcaTabLink.click();
+          } else {
+            console.log("PCA Plot 탭을 찾을 수 없습니다.");
+          }
+        });
+      });
+      </script>
+
+    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+      <h5>How to draw Venn diagram</h5><br>
+      <h6>1. Upload your File</h6><br>
+        Example file format: <br>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Group A</th>
+            <th>Group B</th>
+            <th>Group C</th>
+            <th>Group D</th>
+            <th>...</th>
+            <th class="text-right"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <h6 class="m-0">gene A</h6>
+            </td>
+            <td>
+              <h6 class="m-0">gene B</h6>
+            </td>
+            <td>
+              <h6 class="m-0">gene C</h6>
+            </td>
+            <td>
+              <h6 class="m-0">gene B</h6>
+            </td>
+            <td>
+              <h6 class="m-0">...</h6>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <h6 class="m-0">gene B</h6>
+            </td>
+            <td>
+              <h6 class="m-0">gene C</h6>
+            </td>
+            <td>
+              <h6 class="m-0">gene F</h6>
+            </td>
+            <td>
+              <h6 class="m-0">gene I</h6>
+            </td>
+            <td>
+              <h6 class="m-0">...</h6>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <h6 class="m-0">gene C</h6>
+            </td>
+            <td>
+              <h6 class="m-0">gene D</h6>
+            </td>
+            <td>
+              <h6 class="m-0">gene R</h6>
+            </td>
+            <td>
+              <h6 class="m-0">gene T</h6>
+            </td>
+            <td>
+              <h6 class="m-0">...</h6>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <h6 class="m-0">gene F</h6>
+            </td>
+            <td>
+              <h6 class="m-0">gene R</h6>
+            </td>
+            <td>
+              <h6 class="m-0">gene T</h6>
+            </td>
+            <td>
+              <h6 class="m-0">gene Z</h6>
+            </td>
+            <td>
+              <h6 class="m-0">...</h6>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <h6 class="m-0">...</h6>
+            </td>
+            <td>
+              <h6 class="m-0">...</h6>
+            </td>
+            <td>
+              <h6 class="m-0">...</h6>
+            </td>
+            <td>
+              <h6 class="m-0">...</h6>
+            </td>
+            <td>
+              <h6 class="m-0">...</h6>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <h6>2. click the "Upload"</h6><br>
+      <h6>3. If you want to download the list for venn diagram element, click "Download venn Diagram list"</h6><br>
+    </div>
+    <div class="container mt-5">  
+      <div class="mt-5" id="result-div">
+        {% if uploaded_file_url %}
+        <p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p>
+  
+        <h2>Uploaded Data(10 line)</h2>
+        <pre>{{ file_content }}</pre>
+  
+          <h2>Venn Diagram:</h2>
+          {{ plot_venn|safe }}
+          <br>
+          {% if download_link %}
+            <a href="{{ download_link }} "style="font-size: 16px;">Download venn Diagram list</a>
+            <br>
+            {% endif %}
+            <br>
+          {% if venn_download_link %}
+            <a href="{{ venn_download_link }}" download="VennDiagram.png" style="font-size: 16px;">Download VennDiagram PNG</a>
+          {% endif %}
+          {% endif %}
+      </div>
+    <br>
+    <br>
+  </div>
+  </div>
+</div>
+
+{% endblock content %}

@@ -3,10 +3,18 @@ from admin_datta import views
 from django.contrib.auth import views as auth_views
 
 from .views import tables
+from .views import pca
+from .views import index
+from .views import example_upload
+from .views import process_group
 
 urlpatterns = [
-  path(''       , views.index, name='index'),
-  path('tables/', tables     , name='tables'),
+  path('', index, name='index'),
+  path('tables/', tables, name='tables'),
+  path('pca/', pca, name='pca'),
+  path('example_upload/', example_upload, name='example_upload'),
+  path('process_group/', process_group, name='process_group'),
+  path('tables/', process_group, name='process_group_pca'),
 
   # Components
   path('components/button/', views.bc_button, name='bc_button'),

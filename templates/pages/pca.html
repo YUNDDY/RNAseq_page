@@ -1,0 +1,225 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block breadcrumbs %}{% endblock breadcrumbs %}
+
+{% block extrastyle %}
+
+<style>
+
+.iframe-container {display: flex; width: 100%; height: 100%; flex-direction: column; overflow: hidden;}
+.parent-fit { flex-grow: 1; border: none; margin: 0; padding: 0; height: 100vh; }
+
+</style>
+
+{% endblock extrastyle %}
+
+{% block content %}
+
+       {% if request.session.uploaded_file_path %}
+        1
+        {{ data_test }}
+        {% else %}
+        2
+        {% endif %}
+        
+<!-- <div class="row">
+  <div class="col-md-12"> 
+    <div class="iframe-container">
+      <iframe class="parent-fit" src="/datatb/product/"></iframe>    
+    </div>
+  </div>
+</div> -->
+
+
+
+<div class="col-xl-12 col-md-12 m-b-30">
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active show" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+      aria-controls="home" aria-selected="true">PCA plot</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+        aria-controls="profile" aria-selected="true">How to draw PCA plot</a>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade active show" id="home" role="tabpanel" aria-labelledby="home-tab">
+      <div class="container mt-5">
+        <div class="mt-5" id="result-div">
+          {% if sample_list %}
+            {% if pca_html %}
+              {{ pca_html|safe }}
+              {% if pca_download_link %}
+                <a href="{{ pca_download_link }}" download="PCA.png" style="font-size: 16px;">Download PCA PNG</a>
+              {% endif %}
+            {% endif %}
+            <form method="post" action="{% url 'process_group' %}">
+            {% csrf_token %}
+            <br><br>
+              <table class="table table-hover">
+                <h5>Sample List and Grouping:</h5>
+                <h6>If you want to grouping the samples, please write the Group Name for each sample</h6>
+                <br>
+                <thead>
+                  <tr>
+                    <th>Sample ID</th>
+                    <th>Group</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for sample in sample_list %}
+                  <tr>
+                    <td>{{ sample.sample_id }}</td>
+                    <td>
+                      <input type="text" class="form-control" name="group_{{ sample.sample_id }}" placeholder="Enter Group. ex) A">
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <form method="post" action="{% url 'process_group_pca' %}">
+                <button type="submit">Submit</button>
+              </form>
+              
+            </form>
+        {% else %}
+        <h5>How to draw PCA plot</h5><br>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>gene name</th>
+              <th>Sample 1</th>
+              <th>Sample 2</th>
+              <th>Sample 3</th>
+              <th>...</th>
+              <th class="text-right"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <h6 class="m-0">gene A</h6>
+              </td>
+              <td>
+                <h6 class="m-0">1.36</h6>
+              </td>
+              <td>
+                <h6 class="m-0">2.57</h6>
+              </td>
+              <td>
+                <h6 class="m-0">2.59</h6>
+              </td>
+              <td>
+                <h6 class="m-0">...</h6>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h6 class="m-0">gene B</h6>
+              </td>
+              <td>
+                <h6 class="m-0">6.15</h6>
+              </td>
+              <td>
+                <h6 class="m-0">4.24</h6>
+              </td>
+              <td>
+                <h6 class="m-0">10.28</h6>
+              </td>
+              <td>
+                <h6 class="m-0">...</h6>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h6 class="m-0">gene C</h6>
+              </td>
+              <td>
+                <h6 class="m-0">10.5</h6>
+              </td>
+              <td>
+                <h6 class="m-0">17.2</h6>
+              </td>
+              <td>
+                <h6 class="m-0">24.4</h6>
+              </td>
+              <td>
+                <h6 class="m-0">...</h6>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h6 class="m-0">gene D</h6>
+              </td>
+              <td>
+                <h6 class="m-0">1.8</h6>
+              </td>
+              <td>
+                <h6 class="m-0">1.57</h6>
+              </td>
+              <td>
+                <h6 class="m-0">0.24</h6>
+              </td>
+              <td>
+                <h6 class="m-0">...</h6>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h6 class="m-0">...</h6>
+              </td>
+              <td>
+                <h6 class="m-0">...</h6>
+              </td>
+              <td>
+                <h6 class="m-0">...</h6>
+              </td>
+              <td>
+                <h6 class="m-0">...</h6>
+              </td>
+              <td>
+                <h6 class="m-0">...</h6>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        {% endif %}
+          </div>
+        </div>
+        <br>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        var form = document.getElementById('myForm');
+        
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+
+          var pcaTabLink = document.querySelector('a[data-toggle="tab"][href="#profile"]');
+          if (pcaTabLink) {
+            pcaTabLink.click();
+          } else {
+            console.log("PCA Plot 탭을 찾을 수 없습니다.");
+          }
+        });
+      });
+      </script>
+      <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+        <div class="container mt-5">
+          <div class="mt-5" id="result-div">
+              Principal component analysis (PCA) has been gaining popularity as a tool to bring out strong patterns from complex biological datasets.
+              <img src="{% static 'PCA.png' %}" alt="PCA Image">
+          </div>
+        </div>
+        <br>
+      </div>
+  </div>
+
+  
+</div>
+
+{% endblock content %}
