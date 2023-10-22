@@ -38,11 +38,12 @@ def generate_summary_table(zip_file_path):
           os.remove(file_path)
     with zipfile.ZipFile(zip_file_path, 'r') as zfile:
         deg_files = [name for name in zfile.namelist() if name.startswith('1.DEG') and name.endswith('.xlsx')]
+        up_test_ids = []
+        dw_test_ids = []
         for deg_file in deg_files:
             with zfile.open(deg_file) as file:
                 xls = pd.ExcelFile(io.BytesIO(file.read()))
                 sheet_names = xls.sheet_names
-                
                 for sheet_name in sheet_names:
                     if sheet_name.startswith('2fold & FDR'):
                         sheet = xls.parse(sheet_name)
