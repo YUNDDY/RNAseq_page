@@ -54,7 +54,7 @@
           <h4>Heatmap</h4>
             <h5>Gene list</h5>
             {% for data_file in data_files %}
-              <input type="radio" name="selected_data_files" value="{{ data_file }}" {% if forloop.first %}checked{% endif %}><h6 style="display: inline;"> {{ data_file|cut:'media\\Result\\' }}</h6><br>
+              <input type="radio" name="selected_data_files" value="{{ data_file }}" {% if forloop.first %}checked{% endif %}><h6 style="display: inline;"> {{ data_file|cut:'media/Result/' }}</h6><br>
             {% endfor %}
             <br>
             <h5> Clustering Check</h5>
