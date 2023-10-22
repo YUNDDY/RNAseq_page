@@ -23,7 +23,7 @@ import matplotlib.gridspec as gridspec
 from sklearn.decomposition import PCA
 from adjustText import adjust_text
 
-all_test_ids = []
+#all_test_ids = []
 
 
 def generate_summary_table(zip_file_path):
@@ -38,6 +38,7 @@ def generate_summary_table(zip_file_path):
           os.remove(file_path)
     with zipfile.ZipFile(zip_file_path, 'r') as zfile:
         deg_files = [name for name in zfile.namelist() if name.startswith('1.DEG') and name.endswith('.xlsx')]
+        all_test_ids = []
         up_test_ids = []
         dw_test_ids = []
         for deg_file in deg_files:
